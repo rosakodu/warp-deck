@@ -1,136 +1,208 @@
-# Decky Plugin Template [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://deckbrew.xyz/discord)
+# VPN Deck
 
-Reference example for using [decky-frontend-lib](https://github.com/SteamDeckHomebrew/decky-frontend-lib) (@decky/ui) in a [decky-loader](https://github.com/SteamDeckHomebrew/decky-loader) plugin.
+Плагин для Decky Loader, позволяющий управлять VPN соединением через AmneziaWG на Steam Deck.
 
-### **Please also refer to the [wiki](https://wiki.deckbrew.xyz/en/user-guide/home#plugin-development) for important information on plugin development and submissions/updates. currently documentation is split between this README and the wiki which is something we are hoping to rectify in the future.**  
+## 📋 Описание
 
-## Developers
+**VPN Deck** — это плагин для Decky Loader, который предоставляет удобный интерфейс для управления VPN соединением через AmneziaWG прямо из игрового режима Steam Deck. Плагин позволяет:
 
-### Dependencies
+- Включать и выключать VPN соединение одним нажатием
+- Отслеживать статус VPN соединения в реальном времени
+- Просматривать историю ошибок и диагностическую информацию
+- Управлять VPN без необходимости выхода из игрового режима
 
-This template relies on the user having Node.js v16.14+ and `pnpm` (v9) installed on their system.  
-Please make sure to install pnpm v9 to prevent issues with CI during plugin submission.  
-`pnpm` can be downloaded from `npm` itself which is recommended.
+Плагин требует root-доступ для работы с системными сервисами VPN.
 
-#### Linux
+### ⚠️ Важно: Ограничения плагина
 
-```bash
-sudo npm i -g pnpm@9
-```
+**Плагин только управляет интерфейсом `awg0` через `systemctl`** — он поднимает и останавливает уже настроенный VPN интерфейс. 
 
-If you would like to build plugins that have their own custom backends, Docker is required as it is used by the Decky CLI tool.
+**Сам VPN AmneziaWG необходимо настроить самостоятельно в Desktop Mode:**
+- Соберите из исходников [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go) и [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools)
+- Настройте VPN конфигурацию
+- Убедитесь, что сервис `awg0` корректно настроен и может быть управляем через `systemctl`
 
-### Making your own plugin
+Плагин не выполняет первоначальную настройку VPN — он только управляет уже настроенным соединением.
 
-1. You can fork this repo or utilize the "Use this template" button on Github.
-2. In your local fork/own plugin-repository run these commands:
-   1. ``pnpm i``
-   2. ``pnpm run build``
-   - These setup pnpm and build the frontend code for testing.
-3. Consult the [decky-frontend-lib](https://github.com/SteamDeckHomebrew/decky-frontend-lib) repository for ways to accomplish your tasks.
-   - Documentation and examples are still rough, 
-   - Decky loader primarily targets Steam Deck hardware so keep this in mind when developing your plugin.
-4. If using VSCodium/VSCode, run the `setup` and `build` and `deploy` tasks. If not using VSCodium etc. you can derive your own makefile or just manually utilize the scripts for these commands as you see fit.
+#### Сборка AmneziaWG библиотек
 
-If you use VSCode or it's derivatives (we suggest [VSCodium](https://vscodium.com/)!) just run the `setup` and `build` tasks. It's really that simple.
+Для работы плагина необходимо собрать и установить две библиотеки:
 
-#### Other important information
-
-Everytime you change the frontend code (`index.tsx` etc) you will need to rebuild using the commands from step 2 above or the build task if you're using vscode or a derivative.
-
-Note: If you are receiving build errors due to an out of date library, you should run this command inside of your repository:
+**1. amneziawg-go** ([репозиторий](https://github.com/amnezia-vpn/amneziawg-go))
 
 ```bash
-pnpm update @decky/ui --latest
+# Клонируйте репозиторий
+git clone https://github.com/amnezia-vpn/amneziawg-go
+cd amneziawg-go
+
+# Соберите (требуется Go)
+make
+
+# Установите (обычно требует sudo)
+sudo make install
 ```
 
-### Backend support
+**2. amneziawg-tools** ([репозиторий](https://github.com/amnezia-vpn/amneziawg-tools))
 
-If you are developing with a backend for a plugin and would like to submit it to the [decky-plugin-database](https://github.com/SteamDeckHomebrew/decky-plugin-database) you will need to have all backend code located in ``backend/src``, with backend being located in the root of your git repository.
-When building your plugin, the source code will be built and any finished binary or binaries will be output to ``backend/out`` (which is created during CI.)
-If your buildscript, makefile or any other build method does not place the binary files in the ``backend/out`` directory they will not be properly picked up during CI and your plugin will not have the required binaries included for distribution.
+```bash
+# Клонируйте репозиторий
+git clone https://github.com/amnezia-vpn/amneziawg-tools
+cd amneziawg-tools
 
-Example:  
-In our makefile used to demonstrate the CI process of building and distributing a plugin backend, note that the makefile explicitly creates the `out` folder (``backend/out``) and then compiles the binary into that folder. Here's the relevant snippet.
+# Перейдите в директорию с исходниками
+cd src
 
-```make
-hello:
-	mkdir -p ./out
-	gcc -o ./out/hello ./src/main.c
+# Соберите (требуется C компилятор)
+make
+
+# Установите (обычно требует sudo)
+sudo make install
 ```
 
-The CI does create the `out` folder itself but we recommend creating it yourself if possible during your build process to ensure the build process goes smoothly.
+После установки обеих библиотек настройте VPN конфигурацию и создайте systemd сервис для управления интерфейсом `awg0`.
 
-Note: When locally building your plugin it will be placed into a folder called 'out' this is different from the concept described above.
+## 🛠️ Установка зависимостей и подготовка проекта
 
-The out folder is not sent to the final plugin, but is then put into a ``bin`` folder which is found at the root of the plugin's directory.  
-More information on the bin folder can be found below in the distribution section below.
+### Требования
 
-### Distribution
+- **Node.js** (рекомендуется версия 18 или выше)
+- **pnpm** (менеджер пакетов)
+- **Python 3** (для бэкенда плагина)
+- **Docker** (должен быть установлен и запущен - используется Decky CLI для сборки плагина)
+- **Git**
 
-We recommend following the instructions found in the [decky-plugin-database](https://github.com/SteamDeckHomebrew/decky-plugin-database) on how to get your plugin up on the plugin store. This is the best way to get your plugin in front of users.
-You can also choose to do distribution via a zip file containing the needed files, if that zip file is uploaded to a URL it can then be downloaded and installed via decky-loader.
+### Установка зависимостей
 
-**NOTE: We do not currently have a method to install from a downloaded zip file in "game-mode" due to lack of a usable file-picking dialog.**
-
-Layout of a plugin zip ready for distribution:
-```
-pluginname-v1.0.0.zip (version number is optional but recommended for users sake)
-   |
-   pluginname/ <directory>
-   |  |  |
-   |  |  bin/ <directory> (optional)
-   |  |     |
-   |  |     binary (optional)
-   |  |
-   |  dist/ <directory> [required]
-   |      |
-   |      index.js [required]
-   | 
-   package.json [required]
-   plugin.json [required]
-   main.py {required if you are using the python backend of decky-loader: serverAPI}
-   README.md (optional but recommended)
-   LICENSE(.md) [required, filename should be roughly similar, suffix not needed]
-```
-
-Note regarding licenses: Including a license is required for the plugin store if your chosen license requires the license to be included alongside usage of source-code/binaries!
-
-Standard procedure for licenses is to have your chosen license at the top of the file, and to leave the original license for the plugin-template at the bottom. If this is not the case on submission to the plugin database, you will be asked to fix this discrepancy.
-
-We cannot and will not distribute your plugin on the Plugin Store if it's license requires it's inclusion but you have not included a license to be re-distributed with your plugin in the root of your git repository.
-
-### Creating Releases
-
-To create a GitHub release with the built plugin:
-
-1. **Install GitHub CLI** (if not already installed):
+1. **Клонируйте репозиторий:**
    ```bash
-   brew install gh
-   gh auth login
+   git clone <repository-url>
+   cd vpn-deck
    ```
 
-2. **Ensure all changes are committed**:
+2. **Установите pnpm** (если еще не установлен):
+   ```bash
+   npm install -g pnpm
+   ```
+
+3. **Установите зависимости проекта:**
+   ```bash
+   pnpm install
+   ```
+
+4. **Установите Decky CLI** (необходимо для сборки плагина):
+   
+   CLI будет автоматически установлен при первом запуске скрипта сборки, или вы можете установить его вручную:
+   
+   ```bash
+   # Создайте директорию для CLI
+   mkdir -p cli
+   
+   # Скачайте Decky CLI для вашей платформы
+   # Для macOS (x86_64):
+   curl -L -o cli/decky https://github.com/SteamDeckHomebrew/cli/releases/latest/download/decky-macOS-x86_64
+   
+   # Для macOS (ARM64):
+   curl -L -o cli/decky https://github.com/SteamDeckHomebrew/cli/releases/latest/download/decky-macOS-aarch64
+   
+   # Для Linux (x86_64):
+   curl -L -o cli/decky https://github.com/SteamDeckHomebrew/cli/releases/latest/download/decky-linux-x86_64
+   
+   # Для Linux (ARM64):
+   curl -L -o cli/decky https://github.com/SteamDeckHomebrew/cli/releases/latest/download/decky-linux-aarch64
+   
+   # Сделайте файл исполняемым
+   chmod +x cli/decky
+   ```
+
+## 🔨 Сборка проекта
+
+### Сборка для продакшена
+
+**⚠️ Важно:** Перед сборкой убедитесь, что Docker запущен и работает. Decky CLI использует Docker для сборки плагина в изолированном окружении.
+
+1. **Проверьте, что Docker запущен:**
+   ```bash
+   docker ps
+   ```
+   Если Docker не запущен, запустите его (например, через Docker Desktop).
+
+2. **Соберите фронтенд:**
+   ```bash
+   pnpm build
+   ```
+
+3. **Соберите плагин в ZIP файл:**
+   ```bash
+   ./cli/decky plugin build
+   ```
+   
+   Decky CLI соберет плагин в Docker образе и выведет результат в директорию `./out`. Готовый плагин будет находиться в `out/vpn-deck.zip`
+
+### Установка на Steam Deck
+
+1. Скопируйте файл `out/vpn-deck.zip` на ваш Steam Deck
+2. Откройте Decky Loader в игровом режиме
+3. Перейдите в настройки плагинов
+4. Установите плагин из ZIP файла
+
+## 🚀 Релизинг
+
+Проект использует [release-it](https://github.com/release-it/release-it) для автоматического создания релизов.
+
+### Подготовка к релизу
+
+1. **Убедитесь, что вы на ветке `main`:**
+   ```bash
+   git branch --show-current
+   ```
+
+2. **Убедитесь, что все изменения закоммичены:**
    ```bash
    git status
    ```
 
-3. **Update version in `package.json`** (if needed):
-   ```json
-   "version": "0.0.2"
-   ```
-
-4. **Create release**:
+3. **Убедитесь, что у вас настроен GitHub CLI и вы авторизованы:**
    ```bash
-   pnpm release
-   # или
-   ./release.sh
+   gh auth status
+   # Если не авторизованы:
+   gh auth login
    ```
 
-The script will:
-- Build the plugin (frontend + backend)
-- Create a git tag with the version from `package.json`
-- Push the tag to GitHub
-- Create a GitHub Release with the plugin zip file attached
+### Создание релиза
 
-Make sure you're on the `main` or `master` branch and all changes are committed before running the release script.
+#### Интерактивный режим (рекомендуется)
+
+```bash
+pnpm release
+```
+
+Release-it предложит выбрать тип версии и покажет предварительный просмотр изменений.
+
+#### Прямое указание типа версии
+
+```bash
+# Patch релиз (1.0.0 → 1.0.1) - для исправлений багов
+pnpm release:patch
+
+# Minor релиз (1.0.0 → 1.1.0) - для новой функциональности
+pnpm release:minor
+
+# Major релиз (1.0.0 → 2.0.0) - для критических изменений
+pnpm release:major
+```
+
+## 📝 Лицензия
+
+BSD-3-Clause
+
+## 🤝 Вклад в проект
+
+Вклад в проект приветствуется! Пожалуйста, создавайте issues и pull requests.
+
+## 📞 Поддержка
+
+Если у вас возникли проблемы или вопросы:
+
+1. Проверьте [Issues](https://github.com/mrwaip/vpn-deck/issues)
+2. Создайте новый Issue с описанием проблемы
+3. Убедитесь, что вы предоставили достаточно информации для воспроизведения проблемы

@@ -21,7 +21,7 @@
   "hooks": {
     "before:init": [
       "pnpm install",
-      "BRANCH=$(git branch --show-current) && if [[ \"$BRANCH\" != \"main\" && \"$BRANCH\" != \"master\" ]]; then echo '⚠️  Вы не на ветке main/master. Текущая ветка: $BRANCH'; exit 1; fi"
+      "BRANCH=$(git branch --show-current) && if [[ \"$BRANCH\" != \"main\" ]]; then echo '⚠️  Вы не на ветке main. Текущая ветка: $BRANCH'; exit 1; fi"
     ],
     "before:release": [
       "test -f ./cli/decky || (echo '❌ Decky CLI не найден в ./cli/decky' && exit 1)",
