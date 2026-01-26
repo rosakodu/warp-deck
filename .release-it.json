@@ -10,7 +10,7 @@
     "release": true,
     "releaseName": "v${version}",
     "assets": [
-      "./out/*.zip"
+      "./out/vpn-deck-v*.zip"
     ],
     "draft": false,
     "preRelease": false
@@ -26,7 +26,8 @@
     "before:release": [
       "test -f ./cli/decky || (echo '❌ Decky CLI не найден в ./cli/decky' && exit 1)",
       "./cli/decky plugin build",
-      "test -f out/vpn-deck.zip || (echo '❌ Файл out/vpn-deck.zip не найден после сборки' && exit 1)"
+      "test -f out/vpn-deck.zip || (echo '❌ Файл out/vpn-deck.zip не найден после сборки' && exit 1)",
+      "VERSION=$(node -p \"require('./package.json').version\") && mv out/vpn-deck.zip \"out/vpn-deck-v$VERSION.zip\" && echo \"✅ Файл переименован в vpn-deck-v$VERSION.zip\""
     ],
     "after:bump": "echo '✅ Версия обновлена до ${version}'"
   },
