@@ -1,11 +1,18 @@
 {
-  "name": "Example Plugin",
-  "author": "John Doe",
-  "flags": ["debug", "_root"],
+  "name": "vpn-deck",
+  "author": "mrwaip",
+  "flags": [
+    "root"
+  ],
   "api_version": 1,
   "publish": {
-    "tags": ["template", "root"],
-    "description": "Decky example plugin.",
+    "tags": [
+      "amnezia",
+      "root",
+      "amneziawg",
+      "vpn"
+    ],
+    "description": "AmneziaWG VPN toggle for Decky Loader",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
 }

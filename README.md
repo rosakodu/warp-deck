@@ -99,3 +99,38 @@ Note regarding licenses: Including a license is required for the plugin store if
 Standard procedure for licenses is to have your chosen license at the top of the file, and to leave the original license for the plugin-template at the bottom. If this is not the case on submission to the plugin database, you will be asked to fix this discrepancy.
 
 We cannot and will not distribute your plugin on the Plugin Store if it's license requires it's inclusion but you have not included a license to be re-distributed with your plugin in the root of your git repository.
+
+### Creating Releases
+
+To create a GitHub release with the built plugin:
+
+1. **Install GitHub CLI** (if not already installed):
+   ```bash
+   brew install gh
+   gh auth login
+   ```
+
+2. **Ensure all changes are committed**:
+   ```bash
+   git status
+   ```
+
+3. **Update version in `package.json`** (if needed):
+   ```json
+   "version": "0.0.2"
+   ```
+
+4. **Create release**:
+   ```bash
+   pnpm release
+   # или
+   ./release.sh
+   ```
+
+The script will:
+- Build the plugin (frontend + backend)
+- Create a git tag with the version from `package.json`
+- Push the tag to GitHub
+- Create a GitHub Release with the plugin zip file attached
+
+Make sure you're on the `main` or `master` branch and all changes are committed before running the release script.
