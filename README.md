@@ -2,6 +2,8 @@
 
 Плагин для Decky Loader, позволяющий управлять VPN соединением через AmneziaWG на Steam Deck.
 
+![Screenshot](assets/screenshot.jpeg)
+
 ## 📋 Описание
 
 **VPN Deck** — это плагин для Decky Loader, который предоставляет удобный интерфейс для управления VPN соединением через AmneziaWG прямо из игрового режима Steam Deck. Плагин позволяет:
