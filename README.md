@@ -26,42 +26,135 @@
 
 Плагин не выполняет первоначальную настройку VPN — он только управляет уже настроенным соединением.
 
-#### Сборка AmneziaWG библиотек
+### Настройка AmneziaWG в Desktop Mode
 
-Для работы плагина необходимо собрать и установить две библиотеки:
+Ниже — пошаговая инструкция по настройке VPN на Steam Deck в Desktop Mode. После выполнения этих шагов плагин сможет управлять интерфейсом `awg0` через `systemctl`.
 
-**1. amneziawg-go** ([репозиторий](https://github.com/amnezia-vpn/amneziawg-go))
+#### 0. Переключить SteamOS в read-write режим
 
 ```bash
-# Клонируйте репозиторий
+sudo steamos-readonly disable
+```
+
+#### 1. Установить зависимости
+
+```bash
+sudo pacman -S --needed base-devel git go openresolv
+```
+
+- `go` — для сборки [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go)
+- `openresolv` — для DNS в `awg-quick`
+
+#### 2. Установить amneziawg-go (userspace backend)
+
+```bash
+cd ~
 git clone https://github.com/amnezia-vpn/amneziawg-go
 cd amneziawg-go
-
-# Соберите (требуется Go)
 make
-
-# Установите (обычно требует sudo)
 sudo make install
 ```
 
-**2. amneziawg-tools** ([репозиторий](https://github.com/amnezia-vpn/amneziawg-tools))
+Проверка:
 
 ```bash
-# Клонируйте репозиторий
-git clone https://github.com/amnezia-vpn/amneziawg-tools
-cd amneziawg-tools
+which amneziawg-go
+```
 
-# Перейдите в директорию с исходниками
-cd src
+#### 3. Установить awg / awg-quick
 
-# Соберите (требуется C компилятор)
+```bash
+cd ~
+git clone https://github.com/amnezia-vpn/amneziawg-tools.git
+cd amneziawg-tools/src
 make
-
-# Установите (обычно требует sudo)
 sudo make install
 ```
 
-После установки обеих библиотек настройте VPN конфигурацию и создайте systemd сервис для управления интерфейсом `awg0`.
+Проверка:
+
+```bash
+which awg
+which awg-quick
+```
+
+#### 4. Подготовить конфигурацию
+
+Создать каталог для конфигов:
+
+```bash
+mkdir -p ~/Desktop/vpn-configs
+```
+
+Создать конфиг интерфейса (имя **обязательно** `awg0.conf`):
+
+```bash
+nano ~/Desktop/vpn-configs/awg0.conf
+```
+
+Вставить конфиг, выданный сервером AmneziaWG.
+
+Выставить корректные права:
+
+```bash
+chmod 600 ~/Desktop/vpn-configs/awg0.conf
+sudo chown root:root ~/Desktop/vpn-configs/awg0.conf
+```
+
+Сделать симлинк туда, где его ожидает `awg-quick`:
+
+```bash
+sudo mkdir -p /etc/amneziawg
+sudo ln -s ~/Desktop/vpn-configs/awg0.conf /etc/amneziawg/awg0.conf
+```
+
+#### 5. Запуск VPN
+
+Включить туннель:
+
+```bash
+sudo awg-quick up awg0
+```
+
+Проверить, что интерфейс поднялся:
+
+```bash
+ip a | grep awg0
+```
+
+Проверить внешний IP:
+
+```bash
+curl ifconfig.me
+```
+
+Выключить VPN:
+
+```bash
+sudo awg-quick down awg0
+```
+
+#### 6. Автозапуск (по желанию)
+
+Включить автозапуск при старте системы:
+
+```bash
+sudo systemctl enable --now awg-quick@awg0
+```
+
+Проверка статуса:
+
+```bash
+systemctl is-active awg-quick@awg0
+```
+
+Отключить автозапуск:
+
+```bash
+sudo systemctl disable --now awg-quick@awg0
+```
+
+После выполнения этих шагов можно устанавливать плагин VPN Deck и управлять VPN из игрового режима.
 
 ## 📥 Установка плагина
 
