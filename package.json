@@ -1,7 +1,7 @@
 {
-  "name": "decky-plugin-template",
+  "name": "vpn-deck",
   "version": "1.1.1",
-  "description": "A template to quickly create decky plugins from scratch, based on TypeScript and webpack",
+  "description": "AmneziaWG VPN toggle for Decky Loader",
   "type": "module",
   "scripts": {
     "build": "rollup -c",
@@ -14,21 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SteamDeckHomebrew/decky-plugin-template.git"
+    "url": "git+https://github.com/mrwaip/vpn-deck.git"
   },
-  "keywords": [
-    "decky",
-    "plugin",
-    "plugin-template",
-    "steam-deck",
-    "deck"
-  ],
-  "author": "You <you@you.tld>",
+  "keywords": ["decky", "plugin", "steam-deck", "deck", "vpn", "amnezia", "amneziawg"],
+  "author": "mrwaip",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/SteamDeckHomebrew/decky-plugin-template/issues"
+    "url": "https://github.com/mrwaip/vpn-deck/issues"
   },
-  "homepage": "https://github.com/SteamDeckHomebrew/decky-plugin-template#readme",
+  "homepage": "https://github.com/mrwaip/vpn-deck#readme",
   "devDependencies": {
     "@decky/rollup": "^1.0.2",
     "@decky/ui": "^4.11.0",
@@ -47,10 +41,7 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": [
-        "react",
-        "react-dom"
-      ]
+      "ignoreMissing": ["react", "react-dom"]
     }
   }
 }

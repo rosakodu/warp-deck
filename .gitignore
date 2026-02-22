@@ -55,3 +55,14 @@ out/*
 cli/
 cli/*
 cli/decky
+
+# Binaries
+bin/amneziawg-go
+bin/awg
+bin/awg-quick
+bin/*.tar.gz
+bin/*.zip
+binaries
+
+# Build artifacts
+amneziawg-binaries-*.tar.gz

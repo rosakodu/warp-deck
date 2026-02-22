@@ -20,14 +20,10 @@
   },
   "hooks": {
     "before:init": [
-      "pnpm install",
       "BRANCH=$(git branch --show-current) && if [[ \"$BRANCH\" != \"main\" ]]; then echo '⚠️  Вы не на ветке main. Текущая ветка: $BRANCH'; exit 1; fi"
     ],
     "before:release": [
-      "test -f ./cli/decky || (echo '❌ Decky CLI не найден в ./cli/decky' && exit 1)",
-      "./cli/decky plugin build",
-      "test -f out/vpn-deck.zip || (echo '❌ Файл out/vpn-deck.zip не найден после сборки' && exit 1)",
-      "VERSION=$(node -p \"require('./package.json').version\") && mv out/vpn-deck.zip \"out/vpn-deck-v$VERSION.zip\" && echo \"✅ Файл переименован в vpn-deck-v$VERSION.zip\""
+      "bash infra/build-plugin.sh ${version}"
     ],
     "after:bump": "echo '✅ Версия обновлена до ${version}'"
   },

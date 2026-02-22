@@ -1,17 +1,5 @@
 name: Build AmneziaWG Binaries
 
-# Триггеры запуска:
-# 1. workflow_dispatch - ручной запуск (ОСНОВНОЙ СПОСОБ)
-#    - Можно запустить на любой ветке через GitHub UI или CLI
-#    - gh workflow run build-binaries.yml --ref <branch>
-# 
-# 2. pull_request - автоматически при PR с изменениями workflow
-#    - Позволяет протестировать изменения перед мерджем в main
-#
-# 3. push на main - ЗАКОММЕНТИРОВАНО для безопасности
-#    - Раскомментируйте если нужен автоматический rebuild
-#    - Сейчас используется только ручной запуск
-
 on:
   workflow_dispatch:
     inputs:
@@ -26,81 +14,28 @@ on:
   pull_request:
     paths:
       - '.github/workflows/build-binaries.yml'
-  # Закомментировано: автоматический запуск на main
-  # Раскомментируйте если нужен автоматический rebuild при push
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - '.github/workflows/build-binaries.yml'
-
+      - 'infra/**'
 jobs:
   build-binaries:
     name: Build AmneziaWG binaries for SteamOS (Steam Deck)
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/steamdeckhomebrew/holo-base:latest
-    
+      image: ghcr.io/mrwaip/vpn-deck-builder:latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install build dependencies
+      - name: Copy binaries from container
         run: |
-          # Update package database
-          pacman -Sy --noconfirm
-          # Install Go, Git, and build tools
-          pacman -S --noconfirm go git base-devel libmnl
-
-      - name: Clone amneziawg-go
-        run: |
-          git clone https://github.com/amnezia-vpn/amneziawg-go.git
-          cd amneziawg-go
-          echo "AMNEZIAWG_GO_VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
-
-      - name: Build amneziawg-go
-        run: |
-          cd amneziawg-go
-          make
-          # The binary is built at amneziawg-go (executable)
-          chmod +x amneziawg-go
-          echo "Built amneziawg-go version: $(./amneziawg-go --version 2>&1 || echo 'unknown')"
-          # Verify it's built for the correct architecture
-          file amneziawg-go
-
-      - name: Clone amneziawg-tools
-        run: |
-          git clone https://github.com/amnezia-vpn/amneziawg-tools.git
-          cd amneziawg-tools/src
-          echo "AMNEZIAWG_TOOLS_VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
-
-      - name: Build amneziawg-tools
-        run: |
-          cd amneziawg-tools/src
-          make
-          # This builds awg and awg-quick
-          chmod +x awg awg-quick
-          echo "Built awg version: $(./awg --version 2>&1 || echo 'unknown')"
-          # Verify architecture
-          file awg
+          mkdir -p binaries
+          cp -a /binaries/. binaries/
 
       - name: Create binaries archive
         run: |
-          mkdir -p binaries
-          cp amneziawg-go/amneziawg-go binaries/
-          cp amneziawg-tools/src/awg binaries/
-          cp amneziawg-tools/src/awg-quick binaries/
-          
-          # Create archive
           tar -czf amneziawg-binaries-steamos-amd64.tar.gz -C binaries .
-          
-          # Show archive contents
-          echo "Archive contents:"
           tar -tzf amneziawg-binaries-steamos-amd64.tar.gz
-          
-          # Show file sizes
           ls -lh amneziawg-binaries-steamos-amd64.tar.gz
-          ls -lh binaries/*
 
       - name: Upload binaries as artifact
         uses: actions/upload-artifact@v4
@@ -108,32 +43,3 @@ jobs:
           name: amneziawg-binaries-steamos-amd64
           path: amneziawg-binaries-steamos-amd64.tar.gz
           retention-days: 90
-
-      - name: Create release (on tag)
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: amneziawg-binaries-steamos-amd64.tar.gz
-          body: |
-            ## AmneziaWG Binaries for SteamOS (Steam Deck)
-            
-            **Built using official SteamDeckHomebrew holo-base image for maximum compatibility**
-            
-            Built from:
-            - amneziawg-go: ${{ env.AMNEZIAWG_GO_VERSION }}
-            - amneziawg-tools: ${{ env.AMNEZIAWG_TOOLS_VERSION }}
-            
-            ### Contents
-            - `amneziawg-go` - Userspace WireGuard implementation
-            - `awg` - Configuration utility
-            - `awg-quick` - Quick setup script
-            
-            ### Installation on Steam Deck
-            ```bash
-            tar -xzf amneziawg-binaries-steamos-amd64.tar.gz
-            sudo install -m 755 amneziawg-go /usr/local/bin/
-            sudo install -m 755 awg /usr/local/bin/
-            sudo install -m 755 awg-quick /usr/local/bin/
-            ```
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
