@@ -1,6 +1,6 @@
 {
   "name": "vpn-deck",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "AmneziaWG VPN toggle for Decky Loader",
   "type": "module",
   "scripts": {
@@ -16,7 +16,15 @@
     "type": "git",
     "url": "git+https://github.com/mrwaip/vpn-deck.git"
   },
-  "keywords": ["decky", "plugin", "steam-deck", "deck", "vpn", "amnezia", "amneziawg"],
+  "keywords": [
+    "decky",
+    "plugin",
+    "steam-deck",
+    "deck",
+    "vpn",
+    "amnezia",
+    "amneziawg"
+  ],
   "author": "mrwaip",
   "license": "BSD-3-Clause",
   "bugs": {
@@ -41,7 +49,10 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["react", "react-dom"]
+      "ignoreMissing": [
+        "react",
+        "react-dom"
+      ]
     }
   }
 }
