@@ -1,68 +1,74 @@
 # VPN Deck
 
-Плагин для Decky Loader, позволяющий управлять VPN соединением через AmneziaWG на Steam Deck.
+[Русский](README.ru.md)
+
+A Decky Loader plugin for managing AmneziaWG VPN connections on Steam Deck from gaming mode UI.
 
 ![Screenshot](assets/screenshot.jpeg)
 
-## Дисклеймер
+## Disclaimer
 
-**Ограничение ответственности:** плагин — технический инструмент для управления сетевыми конфигурациями (конфиги AmneziaWG/WireGuard). Использование — на ваш страх и риск. Вы самостоятельно отвечаете за соблюдение законодательства вашей страны или региона. Разработчик не призывает к нарушению законов и не несёт ответственности за способ и цели использования плагина.
+**Limitation of liability:** this plugin is a technical tool for managing network configurations (AmneziaWG/WireGuard configs). Use it at your own risk. You are solely responsible for compliance with the laws of your country or region. The developer does not encourage any violation of laws and is not responsible for how or why the plugin is used.
 
-Плагин разрабатывался чисто на энтузиазме, в свободное время. При проблемах заводите детальный issue на [GitHub](https://github.com/mrwaip/vpn-deck/issues): опишите шаги воспроизведения, версию плагина и системы, приложите логи при необходимости.
+This plugin was developed purely out of enthusiasm, in spare time. If you encounter issues, please open a detailed issue on [GitHub](https://github.com/mrwaip/vpn-deck/issues): describe the steps to reproduce, plugin and system version, and attach logs if necessary.
 
-## 📋 Описание
+## 📋 Description
 
-**VPN Deck** — плагин для Decky Loader, который даёт управлять VPN через AmneziaWG прямо из игрового режима Steam Deck:
+**VPN Deck** is a Decky Loader plugin that lets you manage VPN via AmneziaWG directly from Steam Deck gaming mode:
 
-- Импорт конфигов — добавление VPN из файла `.conf` через интерфейс плагина
-- Несколько конфигов — можно хранить и переключать несколько VPN-подключений
-- Включение и выключение каждого конфига одним переключателем
-- Статус подключений в реальном времени
-- История ошибок и возможность её очистки
+- Config import — add VPN from a `.conf` file through the plugin UI
+- Multiple configs — store and switch between multiple VPN connections
+- Enable/disable each config with a single toggle
+- Real-time connection status
+- Error history with the ability to clear it
 
-Плагин требует root-доступ для работы с `awg-quick` и сетевыми интерфейсами.
+The plugin requires root access to work with `awg-quick` and network interfaces.
 
-### ⚠️ Важно: Ограничения
+### ⚠️ Important: Limitations
 
-**В версии 2 плагин не управляет интерфейсом `awg0`.** Управляются только конфиги, добавленные через плагин (интерфейсы вида `vd-<имя>`).
+**In version 2, the plugin does not manage the `awg0` interface.** Only configs added through the plugin are managed (interfaces named `vd-<name>`).
 
-Конфиги, импортированные через плагин, хранятся в `~/.local/share/vpn-deck/configs`; симлинки создаются в `/etc/amnezia/amneziawg/`. Бинарники AmneziaWG входят в релиз плагина, отдельная установка не нужна.
+Configs imported through the plugin are stored in `~/.local/share/vpn-deck/configs`; symlinks are created in `/etc/amnezia/amneziawg/`. AmneziaWG binaries are included in the plugin release — no separate installation required.
 
-## Изменения между v1 и v2
+## Changes between v1 and v2
 
 | | v1 | v2 |
 |---|----|----|
-| **Интерфейс** | Управлял только одним интерфейсом `awg0` через `systemctl` | Интерфейсом `awg0` **не управляет**. Только конфиги, добавленные через плагин (интерфейсы `vd-*`) |
-| **Настройка** | Конфиг нужно было настраивать вручную в Desktop Mode (сборка amneziawg-go/awg-quick, создание `awg0.conf`, симлинки) | Конфиги импортируются из UI (файл `.conf`). Бинарники входят в релиз |
-| **Конфиги** | Один конфиг (`awg0`) | Несколько конфигов с именами `vd-<имя>` |
+| **Interface** | Managed only one `awg0` interface via `systemctl` | Does **not** manage `awg0`. Only configs added through the plugin (`vd-*` interfaces) |
+| **Setup** | Config had to be set up manually in Desktop Mode (building amneziawg-go/awg-quick, creating `awg0.conf`, symlinks) | Configs are imported from UI (`.conf` file). Binaries are included in the release |
+| **Configs** | One config (`awg0`) | Multiple configs named `vd-<name>` |
 
-Если вы использовали v1 с `awg0`, после обновления на v2 этот интерфейс плагин больше не поднимает и не останавливает. Чтобы управлять VPN через плагин, импортируйте конфиг заново через «Импортировать конфиг».
+If you were using v1 with `awg0`, after upgrading to v2 the plugin will no longer bring up or stop that interface. To manage VPN through the plugin, re-import your config via "Import config".
 
-## 📥 Установка плагина
+## 📥 Installation
 
-Устанавливайте плагин **только из официальных релизов** на GitHub.
+Install the plugin **only from official releases** on GitHub.
 
-**Перед удалением плагина или установкой новой версии выключите VPN в самом плагине** (переключатель у активного конфига поставьте в «выкл»). Иначе обновление или удаление могут завершиться с ошибкой.
+> [!IMPORTANT]
+> **The plugin requires an AmneziaWG v1 config.** AmneziaWG v2 protocol is not supported.
+> The config must be in **AmneziaWG native format** (a WireGuard-like `.conf` file with `Jc`, `Jmin`, `Jmax`, etc. fields). In the AmneziaVPN app, make sure to select **"AmneziaWG native format"** when exporting — it is not the default.
 
-1. Откройте [Releases](https://github.com/mrwaip/vpn-deck/releases) и скачайте последний релиз (файл `vpn-deck-v*.zip`).
-2. Скопируйте ZIP на Steam Deck, откройте Decky Loader → настройки плагинов → «Установить плагин» → укажите путь к файлу.
+**Before removing the plugin or installing a new version, turn off VPN in the plugin itself** (set the toggle next to the active config to "off"). Otherwise, the update or removal may fail.
 
-**После установки:** откройте плагин в игровом режиме → «Импортировать конфиг» → выберите файл `.conf` (например, из папки «Загрузки»). После импорта конфиг появится в списке и его можно включать/выключать.
+1. Open [Releases](https://github.com/mrwaip/vpn-deck/releases) and download the latest release (`vpn-deck-v*.zip`).
+2. Copy the ZIP to your Steam Deck, open Decky Loader → plugin settings → "Install plugin" → specify the path to the file.
 
-### Как переслать конфиг на Steam Deck
+**After installation:** open the plugin in gaming mode → "Import config" → select a `.conf` file (e.g., from the Downloads folder). After import, the config will appear in the list and can be toggled on/off.
 
-Файл `.conf` нужно каким-то способом перенести на Deck, чтобы выбрать его в плагине:
+### How to transfer a config to Steam Deck
 
-- **LocalSend** — установите приложение на телефон/ПК и на Deck (из Discover в Desktop Mode). Отправьте файл `.conf` на Deck; он окажется, например, в «Загрузки».
-- **Desktop Mode + браузер** — переключитесь в режим рабочего стола, откройте браузер, скачайте конфиг (или сохраните из почты/мессенджера) в папку «Загрузки». В игровом режиме в плагине укажите путь к этому файлу (например, `/home/deck/Downloads/имя.conf`).
+You need to transfer the `.conf` file to the Deck in order to select it in the plugin:
 
-## Использование
+- **LocalSend** — install the app on your phone/PC and on the Deck (from Discover in Desktop Mode). Send the `.conf` file to the Deck; it will land in Downloads.
+- **Desktop Mode + browser** — switch to Desktop Mode, open a browser, download the config (or save it from email/messenger) to the Downloads folder. In gaming mode, specify the path to this file in the plugin (e.g., `/home/deck/Downloads/name.conf`).
 
-- **Импорт конфига** — кнопка «Импортировать конфиг», выбор файла `.conf`. Имя конфига — до 12 символов (буквы, цифры, `_`, `=`, `+`, `.`, `-`).
-- **Включение/выключение** — переключатель рядом с именем конфига.
-- **Удаление конфига** — «Удалить конфиг» под нужным конфигом (интерфейс будет остановлен).
-- **Ошибки** — раздел «Ошибки»: просмотр истории и кнопка «Очистить историю ошибок».
+## Usage
 
-## Поддержка и лицензия
+- **Import config** — "Import config" button, select a `.conf` file. Config name: up to 12 characters (letters, digits, `_`, `=`, `+`, `.`, `-`).
+- **Enable/disable** — toggle next to the config name.
+- **Delete config** — "Delete config" under the desired config (the interface will be stopped).
+- **Errors** — "Errors" section: view history and clear it with "Clear error history".
 
-При проблемах или вопросах — [Issue на GitHub](https://github.com/mrwaip/vpn-deck/issues). Лицензия: BSD-3-Clause.
+## Support & License
+
+For issues or questions — [open an issue on GitHub](https://github.com/mrwaip/vpn-deck/issues). License: BSD-3-Clause.

@@ -12,5 +12,4 @@ RUN git clone --depth 1 https://github.com/amnezia-vpn/amneziawg-tools.git /tmp/
 
 RUN mkdir /binaries && \
     cp /tmp/amneziawg-go/amneziawg-go /binaries/ && \
-    cp /tmp/amneziawg-tools/src/wg /binaries/awg && \
-    cp /tmp/amneziawg-tools/src/wg-quick/linux.bash /binaries/awg-quick
+    cp /tmp/amneziawg-tools/src/wg /binaries/awg
