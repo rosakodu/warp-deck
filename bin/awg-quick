@@ -66,6 +66,7 @@ parse_options() {
 			PostUp) POST_UP+=( "$value" ); continue ;;
 			PostDown) POST_DOWN+=( "$value" ); continue ;;
 			SaveConfig) read_bool SAVE_CONFIG "$value"; continue ;;
+			I1|I2|I3|I4|I5) [[ -n $value ]] && WG_CONFIG+="$line"$'\n'; continue ;;
 			esac
 		fi
 		WG_CONFIG+="$line"$'\n'

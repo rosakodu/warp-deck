@@ -45,7 +45,6 @@ If you were using v1 with `awg0`, after upgrading to v2 the plugin will no longe
 Install the plugin **only from official releases** on GitHub.
 
 > [!IMPORTANT]
-> **The plugin requires an AmneziaWG v1 config.** AmneziaWG v2 protocol is not supported.
 > The config must be in **AmneziaWG native format** (a WireGuard-like `.conf` file with `Jc`, `Jmin`, `Jmax`, etc. fields). In the AmneziaVPN app, make sure to select **"AmneziaWG native format"** when exporting — it is not the default.
 
 **Before removing the plugin or installing a new version, turn off VPN in the plugin itself** (set the toggle next to the active config to "off"). Otherwise, the update or removal may fail.
