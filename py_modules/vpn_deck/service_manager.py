@@ -8,6 +8,8 @@ from datetime import datetime
 
 import decky
 
+from ._utils import clean_env
+
 MANAGED_PREFIX = "vd-"
 DEFAULT_INTERFACE = "awg0"
 
@@ -20,18 +22,6 @@ class ServiceManager:
     def __init__(self, binary_manager):
         self.binary_manager = binary_manager
 
-    @staticmethod
-    def _clean_env() -> dict:
-        env = os.environ.copy()
-        if 'LD_LIBRARY_PATH' in env:
-            paths = env['LD_LIBRARY_PATH'].split(':')
-            paths = [p for p in paths if '/tmp/' not in p and '_MEI' not in p]
-            if paths:
-                env['LD_LIBRARY_PATH'] = ':'.join(paths)
-            else:
-                del env['LD_LIBRARY_PATH']
-        return env
-
     def _run(self, cmd: list, timeout: int = 10, quiet: bool = False):
         log = decky.logger.debug if quiet else decky.logger.info
         log(f"Running: {' '.join(str(c) for c in cmd)}")
@@ -41,7 +31,7 @@ class ServiceManager:
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                env=self._clean_env()
+                env=clean_env()
             )
             return (result.returncode, result.stdout.strip(), result.stderr.strip())
         except subprocess.TimeoutExpired:
@@ -73,7 +63,7 @@ class ServiceManager:
                     text=True,
                     timeout=timeout,
                     start_new_session=True,
-                    env=self._clean_env(),
+                    env=clean_env(),
                 )
                 log_file.write(f"--- RC: {result.returncode} ---\n")
 
