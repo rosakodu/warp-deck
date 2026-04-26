@@ -153,6 +153,37 @@ class ConfigManager:
             decky.logger.error(f"Error reading config {config_path}: {e}")
             return None
     
+    def _ensure_symlink(self, local_path: str, system_path: str) -> Dict:
+        """Makes sure system_path is a symlink pointing at local_path.
+
+        Steam OS updates wipe /etc/amnezia/amneziawg/*, so this is called
+        both on import and on plugin load to repair links that slipped.
+        Returns {"ok": bool, "action": "none"|"created"|"replaced", "error": str|None}.
+        """
+        try:
+            os.makedirs(os.path.dirname(system_path), mode=0o755, exist_ok=True)
+
+            try:
+                if os.readlink(system_path) == local_path:
+                    return {"ok": True, "action": "none", "error": None}
+                existed = True
+            except OSError:
+                existed = os.path.lexists(system_path)
+
+            if existed:
+                try:
+                    os.unlink(system_path)
+                except FileNotFoundError:
+                    existed = False
+
+            os.symlink(local_path, system_path)
+            action = "replaced" if existed else "created"
+            decky.logger.info(f"Symlink {action}: {system_path} -> {local_path}")
+            return {"ok": True, "action": action, "error": None}
+        except Exception as e:
+            decky.logger.warning(f"Symlink failed for {system_path}: {e}")
+            return {"ok": False, "action": "error", "error": str(e)}
+
     def write_config(self, name: str, content: str) -> Dict:
         """Writes config to local store and creates symlink in system directory."""
         sanitized_name = self._sanitize_name(name)
@@ -165,16 +196,25 @@ class ConfigManager:
         os.chmod(local_path, 0o600)
         decky.logger.info(f"Wrote config to {local_path}")
 
-        try:
-            os.makedirs(self.system_config_dir, mode=0o755, exist_ok=True)
-            if os.path.exists(system_path) or os.path.islink(system_path):
-                os.unlink(system_path)
-            os.symlink(local_path, system_path)
-            decky.logger.info(f"Created symlink: {system_path} -> {local_path}")
-        except Exception as e:
-            decky.logger.warning(f"Symlink failed (non-fatal): {e}")
+        self._ensure_symlink(local_path, system_path)
 
         return {"success": True, "config_name": sanitized_name, "interface_name": interface_name, "error": None}
+
+    async def repair_symlinks(self) -> Dict:
+        """Re-creates missing/broken symlinks for all managed configs."""
+        scanned = await self.scan_existing_configs()
+        results = []
+        for cfg in scanned["managed"]:
+            r = self._ensure_symlink(cfg["path"], cfg["system_path"])
+            results.append({
+                "name": cfg["name"],
+                "interface": cfg["interface"],
+                "ok": r["ok"],
+                "action": r["action"],
+                "error": r["error"],
+            })
+        repaired = sum(1 for r in results if r["ok"] and r["action"] in ("created", "replaced"))
+        return {"total": len(results), "repaired": repaired, "results": results}
 
     async def delete_config(self, name: str) -> Dict:
         """Deletes a VPN configuration (no backup)."""
