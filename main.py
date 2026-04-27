@@ -4,7 +4,7 @@ import time
 import traceback as _traceback
 from typing import Dict, List, Optional
 
-from vpn_deck import BinaryManager, ConfigManager, ServiceManager
+from vpn_deck import BinaryManager, ConfigManager, Diagnostics, ServiceManager
 
 import decky
 
@@ -38,6 +38,9 @@ class Plugin:
         # Initialize ServiceManager
         self.service_manager = ServiceManager(self.binary_manager)
 
+        # Initialize Diagnostics
+        self.diagnostics = Diagnostics()
+
     def _add_error(self, operation: str, error_type: str, message: str, details: dict = None):
         """Добавляет ошибку в историю"""
         error = {
@@ -55,6 +58,14 @@ class Plugin:
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         decky.logger.info("VPN Deck plugin initialized")
+        try:
+            repair = await self.config_manager.repair_symlinks()
+            if repair["repaired"]:
+                decky.logger.info(
+                    f"Auto-repaired {repair['repaired']}/{repair['total']} symlinks on startup"
+                )
+        except Exception as e:
+            decky.logger.error(f"Symlink auto-repair failed: {e}")
 
     # Function called first during the unload process, utilize this to handle your plugin being stopped, but not
     # completely removed
@@ -226,6 +237,21 @@ class Plugin:
         else:
             decky.logger.warning(f"Failed to delete config: {result.get('error')}")
         return result
+
+    @_rpc
+    async def repair_symlinks(self) -> dict:
+        """Re-creates missing symlinks in /etc/amnezia/amneziawg/ for all managed configs.
+
+        SteamOS updates reset /etc, so symlinks need to be rebuilt periodically.
+        """
+        result = await self.config_manager.repair_symlinks()
+        decky.logger.info(f"Symlink repair: {result['repaired']}/{result['total']} rebuilt")
+        return result
+
+    @_rpc
+    async def diagnose_connectivity(self, targets: Optional[List[Dict]] = None) -> List[Dict]:
+        """Runs ping/HTTP probes against default or custom targets."""
+        return self.diagnostics.check(targets)
 
     @_rpc
     async def get_vpn_config(self, name: str) -> Optional[str]:

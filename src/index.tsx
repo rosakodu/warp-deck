@@ -20,7 +20,7 @@ import {
   openFilePicker,
   toaster,
 } from "@decky/api";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaNetworkWired } from "react-icons/fa";
 
 interface VPNError {
@@ -65,9 +65,37 @@ const deleteVpnConfig = callable<[{ name: string }] | [string], DeleteConfigResu
   "delete_vpn_config"
 );
 
+interface SymlinkRepairItem {
+  name: string;
+  interface: string;
+  ok: boolean;
+  action: "none" | "created" | "replaced" | "error";
+  error: string | null;
+}
+interface SymlinkRepairResult {
+  total: number;
+  repaired: number;
+  results: SymlinkRepairItem[];
+}
+const repairSymlinks = callable<[], SymlinkRepairResult>("repair_symlinks");
+
+interface DiagnosticsProbe {
+  name: string;
+  kind: "ping" | "http";
+  target: string;
+  ok: boolean;
+  detail: string;
+  latency_ms: number | null;
+}
+const diagnoseConnectivity = callable<[], DiagnosticsProbe[]>("diagnose_connectivity");
+
 // Валидация имени конфига: как в awg-quick и config_manager (интерфейс = vd-<name>, макс. 15 символов)
 const CONFIG_NAME_MAX_LEN = 12; // 3 (префикс "vd-") + 12 = 15
 const CONFIG_NAME_REGEX = /^[a-zA-Z0-9_=+.-]+$/;
+
+function formatTimestamp(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleString();
+}
 
 function validateConfigName(name: string): { valid: boolean; error?: string } {
   const trimmed = name.trim();
@@ -111,8 +139,6 @@ function ImportConfigModal({
         undefined,
         ["conf"],
       );
-      console.log(res);
-      console.trace("after pick");
       const filename =
         res.realpath
           .split("/")
@@ -256,12 +282,9 @@ function Content() {
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<VPNError[]>([]);
   const [showErrors, setShowErrors] = useState<boolean>(false);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
-  const errorsPollingRef = useRef<NodeJS.Timeout | null>(null);
-
-  const formatTimestamp = (timestamp: number): string => {
-    return new Date(timestamp * 1000).toLocaleString();
-  };
+  const [probes, setProbes] = useState<DiagnosticsProbe[] | null>(null);
+  const [probesLoading, setProbesLoading] = useState<boolean>(false);
+  const [repairLoading, setRepairLoading] = useState<boolean>(false);
 
   const refreshConfigs = useCallback(async () => {
     try {
@@ -315,7 +338,40 @@ function Content() {
     [refreshConfigs, loadErrors],
   );
 
-  const handleClearErrors = async () => {
+  const handleDiagnose = useCallback(async () => {
+    setProbesLoading(true);
+    try {
+      const res = await diagnoseConnectivity();
+      setProbes(res);
+      const ok = res.filter((p) => p.ok).length;
+      toaster.toast({
+        title: "Проверка связи",
+        body: `${ok}/${res.length} доступно`,
+      });
+    } catch (e) {
+      toaster.toast({ title: "Ошибка диагностики", body: String(e) });
+    } finally {
+      setProbesLoading(false);
+    }
+  }, []);
+
+  const handleRepairSymlinks = useCallback(async () => {
+    setRepairLoading(true);
+    try {
+      const res = await repairSymlinks();
+      toaster.toast({
+        title: "Симлинки",
+        body: `Восстановлено ${res.repaired} из ${res.total}`,
+      });
+      await refreshConfigs();
+    } catch (e) {
+      toaster.toast({ title: "Ошибка восстановления", body: String(e) });
+    } finally {
+      setRepairLoading(false);
+    }
+  }, [refreshConfigs]);
+
+  const handleClearErrors = useCallback(async () => {
     try {
       await clearErrors();
       setErrors([]);
@@ -323,18 +379,18 @@ function Content() {
     } catch (error) {
       toaster.toast({ title: "Ошибка очистки", body: String(error) });
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshConfigs();
     loadErrors();
 
-    pollingRef.current = setInterval(refreshConfigs, 3000);
-    errorsPollingRef.current = setInterval(loadErrors, 10000);
+    const configsInterval = setInterval(refreshConfigs, 3000);
+    const errorsInterval = setInterval(loadErrors, 10000);
 
     return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current);
-      if (errorsPollingRef.current) clearInterval(errorsPollingRef.current);
+      clearInterval(configsInterval);
+      clearInterval(errorsInterval);
     };
   }, [refreshConfigs, loadErrors]);
 
@@ -386,6 +442,45 @@ function Content() {
         </PanelSectionRow>
       </PanelSection>
 
+      <PanelSection title="Диагностика">
+        <PanelSectionRow>
+          <ButtonItem
+            layout="below"
+            disabled={probesLoading}
+            onClick={handleDiagnose}
+          >
+            {probesLoading ? "Проверка…" : "Проверить связь"}
+          </ButtonItem>
+        </PanelSectionRow>
+        {probes && probes.map((p, i) => (
+          <PanelSectionRow key={`${p.name}-${i}`}>
+            <div
+              style={{
+                padding: "8px",
+                fontSize: "12px",
+                borderLeft: `3px solid ${p.ok ? "#4ade80" : "#f87171"}`,
+                paddingLeft: "10px",
+                marginBottom: "4px",
+              }}
+            >
+              <div style={{ fontWeight: "bold" }}>
+                {p.ok ? "✓" : "✗"} {p.name}
+              </div>
+              <div style={{ color: "#8b929a" }}>{p.detail}</div>
+            </div>
+          </PanelSectionRow>
+        ))}
+        <PanelSectionRow>
+          <ButtonItem
+            layout="below"
+            disabled={repairLoading}
+            onClick={handleRepairSymlinks}
+          >
+            {repairLoading ? "Восстановление…" : "Восстановить симлинки"}
+          </ButtonItem>
+        </PanelSectionRow>
+      </PanelSection>
+
       <PanelSection title="Ошибки">
         <PanelSectionRow>
           <ButtonItem
@@ -428,8 +523,8 @@ function Content() {
               errors
                 .slice()
                 .reverse()
-                .map((error, index) => (
-                  <PanelSectionRow key={index}>
+                .map((error) => (
+                  <PanelSectionRow key={`${error.timestamp}-${error.operation}`}>
                     <div
                       style={{
                         padding: "12px",
