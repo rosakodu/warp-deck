@@ -1,6 +1,6 @@
 {
   "name": "vpn-deck",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "AmneziaWG VPN toggle for Decky Loader",
   "type": "module",
   "scripts": {
