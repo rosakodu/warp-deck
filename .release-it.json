@@ -10,7 +10,7 @@
     "release": true,
     "releaseName": "v${version}",
     "assets": [
-      "./out/vpn-deck-v*.zip"
+      "./out/warp-deck-v*.zip"
     ],
     "draft": false,
     "preRelease": false

@@ -60,7 +60,8 @@ class Diagnostics:
     def _http(name: str, url: str) -> Dict:
         try:
             r = subprocess.run(
-                ["curl", "-sS", "-o", "/dev/null", "-w", "%{http_code} %{time_total}",
+                ["curl", "-sS", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                 "-o", "/dev/null", "-w", "%{http_code} %{time_total}",
                  "--max-time", "6", "-L", url],
                 capture_output=True, text=True, timeout=10, check=False,
                 env=clean_env(),

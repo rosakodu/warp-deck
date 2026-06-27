@@ -31,6 +31,7 @@ class MockDecky:
         self.logger = MockLogger()
         self.DECKY_PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
         self.DECKY_PLUGIN_LOG_DIR = os.path.join(self.DECKY_PLUGIN_DIR, "logs")
+        self.DECKY_USER_HOME = os.path.dirname(os.path.abspath(__file__))
 
 sys.modules['decky'] = MockDecky()
 

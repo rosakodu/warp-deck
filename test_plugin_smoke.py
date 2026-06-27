@@ -54,7 +54,7 @@ class _MockConfigManager:
         pass
 
     async def list_all_configs(self):
-        return [{"name": "test", "interface": "awg-test", "managed_by": "vpn-deck"}]
+        return [{"name": "test", "interface": "awg-test", "managed_by": "warp-deck"}]
 
     async def scan_existing_configs(self):
         return {"managed": [], "existing": []}
@@ -94,10 +94,16 @@ class _MockServiceManager:
         return {"success": True, "stopped": [], "error": None}
 
 
+class _MockDiagnostics:
+    def check(self, targets=None):
+        return []
+
+
 class _MockVpnDeck:
     BinaryManager = _MockBinaryManager
     ConfigManager = _MockConfigManager
     ServiceManager = _MockServiceManager
+    Diagnostics = _MockDiagnostics
 
 
 sys.modules["vpn_deck"] = _MockVpnDeck()

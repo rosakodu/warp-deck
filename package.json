@@ -1,6 +1,6 @@
 {
-  "name": "vpn-deck",
-  "version": "2.3.0",
+  "name": "warp-deck",
+  "version": "1.0.0",
   "description": "AmneziaWG VPN toggle for Decky Loader",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mrwaip/vpn-deck.git"
+    "url": "git+https://github.com/rosakodu/warp-deck.git"
   },
   "keywords": [
     "decky",
@@ -25,12 +25,12 @@
     "amnezia",
     "amneziawg"
   ],
-  "author": "mrwaip",
+  "author": "mrwaip & rosakodu",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/mrwaip/vpn-deck/issues"
+    "url": "https://github.com/rosakodu/warp-deck/issues"
   },
-  "homepage": "https://github.com/mrwaip/vpn-deck#readme",
+  "homepage": "https://github.com/rosakodu/warp-deck#readme",
   "devDependencies": {
     "@decky/rollup": "^1.0.2",
     "@decky/ui": "^4.11.0",

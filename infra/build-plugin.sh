@@ -9,6 +9,6 @@ echo "==> Building plugin"
 ./cli/decky plugin build
 
 if [[ -n "$VERSION" ]]; then
-    mv ./out/vpn-deck.zip "./out/vpn-deck-v${VERSION}.zip"
-    echo "==> Renamed to vpn-deck-v${VERSION}.zip"
+    mv ./out/warp-deck.zip "./out/warp-deck-v${VERSION}.zip"
+    echo "==> Renamed to warp-deck-v${VERSION}.zip"
 fi
