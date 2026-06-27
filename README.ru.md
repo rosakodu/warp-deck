@@ -4,6 +4,7 @@
 
 Плагин для Decky Loader на Steam Deck, который позволяет в один клик сгенерировать и подключиться к Cloudflare WARP через AmneziaWG (протокол с защитой от блокировок DPI), а также импортировать собственные конфигурации AmneziaWG/WireGuard.
 
+> **Примечание:** Для корректной работы плагина на вашем устройстве должен быть обязательно установлен официальный клиент [Amnezia VPN](https://github.com/amnezia-vpn/amnezia-client).
 ![Screenshot](assets/screenshot.jpeg)
 
 ## 📋 Возможности

@@ -4,6 +4,7 @@
 
 A Decky Loader plugin for Steam Deck that allows you to easily connect to Cloudflare WARP via AmneziaWG (DPI-resistant WireGuard protocol) in one click, or import your custom AmneziaWG/WireGuard configurations.
 
+> **Note:** This plugin requires the official [Amnezia VPN Client](https://github.com/amnezia-vpn/amnezia-client) to be installed on your system to function properly.
 ![Screenshot](assets/screenshot.jpeg)
 
 ## 📋 Features
