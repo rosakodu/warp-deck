@@ -1,6 +1,6 @@
 {
-  "name": "vpn-deck",
-  "author": "mrwaip",
+  "name": "warp-deck",
+  "author": "mrwaip & rosakodu",
   "flags": [
     "root"
   ],
@@ -10,9 +10,10 @@
       "amnezia",
       "root",
       "amneziawg",
-      "vpn"
+      "vpn",
+      "warp"
     ],
-    "description": "AmneziaWG VPN toggle for Decky Loader",
+    "description": "AmneziaWG Cloudflare WARP VPN Generator for Decky Loader",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
 }

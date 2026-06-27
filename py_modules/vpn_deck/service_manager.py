@@ -22,6 +22,16 @@ class ServiceManager:
     def __init__(self, binary_manager):
         self.binary_manager = binary_manager
 
+    def _get_env(self):
+        """Prepares environment variables, adding plugin binaries to PATH."""
+        env = clean_env()
+        bin_dir = getattr(self.binary_manager, "bin_dir", None)
+        if bin_dir:
+            abs_bin_dir = os.path.abspath(bin_dir)
+            existing_path = env.get("PATH", "")
+            env["PATH"] = f"{abs_bin_dir}:{existing_path}"
+        return env
+
     def _run(self, cmd: list, timeout: int = 10, quiet: bool = False):
         log = decky.logger.debug if quiet else decky.logger.info
         log(f"Running: {' '.join(str(c) for c in cmd)}")
@@ -31,7 +41,7 @@ class ServiceManager:
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                env=clean_env()
+                env=self._get_env()
             )
             return (result.returncode, result.stdout.strip(), result.stderr.strip())
         except subprocess.TimeoutExpired:
@@ -63,7 +73,7 @@ class ServiceManager:
                     text=True,
                     timeout=timeout,
                     start_new_session=True,
-                    env=clean_env(),
+                    env=self._get_env(),
                 )
                 log_file.write(f"--- RC: {result.returncode} ---\n")
 
@@ -125,7 +135,15 @@ class ServiceManager:
             decky.logger.info(f"Stopped {interface} via awg-quick")
             return {"success": True, "interface": interface, "method": "awg-quick", "error": None}
 
-        decky.logger.error(f"Failed to stop {interface}: {stderr}")
+        # Резервный способ: если awg-quick down завершился неудачно (например, из-за удаления конфига),
+        # мы принудительно удаляем интерфейс из ядра Linux
+        decky.logger.warning(f"awg-quick down failed for {interface} (rc={rc}, err={stderr}). Attempting force delete...")
+        rc_ip, stdout_ip, stderr_ip = self._run(["ip", "link", "delete", interface])
+        if rc_ip == 0:
+            decky.logger.info(f"Force stopped {interface} via ip link delete")
+            return {"success": True, "interface": interface, "method": "ip-link-delete", "error": None}
+
+        decky.logger.error(f"Failed to stop {interface} even with force delete: {stderr_ip or stderr}")
         return {"success": False, "interface": interface, "method": "awg-quick", "error": stderr or f"awg-quick down failed (rc={rc})"}
 
     def get_status(self, interface: str) -> dict:

@@ -9,12 +9,47 @@ from typing import Optional, Dict, List
 import decky
 
 
+def get_user_home() -> str:
+    """Robustly resolves the user's home directory on Steam Deck, bypassing root home."""
+    # 1. Try env variable
+    env_home = os.environ.get("DECKY_USER_HOME")
+    if env_home and os.path.isdir(env_home):
+        return env_home
+        
+    # 2. Try decky attribute
+    try:
+        if hasattr(decky, "DECKY_USER_HOME") and decky.DECKY_USER_HOME:
+            if os.path.isdir(decky.DECKY_USER_HOME):
+                return decky.DECKY_USER_HOME
+    except Exception:
+        pass
+        
+    # 3. Standard Steam Deck user directory
+    if os.path.isdir("/home/deck"):
+        return "/home/deck"
+        
+    # 4. Scan /home for other users
+    if os.path.isdir("/home"):
+        try:
+            for user in os.listdir("/home"):
+                if user != "lost+found":
+                    user_path = f"/home/{user}"
+                    if os.path.isdir(user_path):
+                        return user_path
+        except Exception:
+            pass
+            
+    # 5. Fallback
+    return os.path.expanduser("~")
+
+
 class ConfigManager:
     """Manages VPN configurations with import and validation"""
 
     def __init__(self):
         # Directories
-        self.config_dir = os.path.expanduser("~/.local/share/vpn-deck/configs")
+        user_home = get_user_home()
+        self.config_dir = os.path.join(user_home, ".local/share/warp-deck/configs")
         self.system_config_dir = "/etc/amnezia/amneziawg"
 
         # Prefix for managed configs (short to leave room for user name; IFNAMSIZ=16)
@@ -27,8 +62,23 @@ class ConfigManager:
         """Creates necessary directories if they don't exist"""
         for directory in [self.config_dir]:
             try:
-                os.makedirs(directory, mode=0o700, exist_ok=True)
+                os.makedirs(directory, mode=0o755, exist_ok=True)
                 decky.logger.info(f"Ensured directory exists: {directory}")
+                
+                # Change owner to 'deck' user (UID 1000) so it's readable/writable by standard user
+                try:
+                    import pwd
+                    uid = pwd.getpwnam("deck").pw_uid
+                    gid = pwd.getpwnam("deck").pw_gid
+                    os.chown(directory, uid, gid)
+                    # Also try to chown the parent directory ~/.local/share/warp-deck
+                    parent = os.path.dirname(directory)
+                    os.chown(parent, uid, gid)
+                except Exception:
+                    try:
+                        os.chown(directory, 1000, 1000)
+                    except Exception:
+                        pass
             except Exception as e:
                 decky.logger.error(f"Failed to create directory {directory}: {e}")
     
@@ -97,7 +147,7 @@ class ConfigManager:
                             "path": local_path,
                             "system_path": system_path,
                             "is_symlink": is_symlink,
-                            "managed_by": "vpn-deck"
+                            "managed_by": "warp-deck"
                         })
             
             # Scan existing configs in system directory
@@ -193,8 +243,20 @@ class ConfigManager:
 
         with open(local_path, "w") as f:
             f.write(content)
-        os.chmod(local_path, 0o600)
+        os.chmod(local_path, 0o644)
         decky.logger.info(f"Wrote config to {local_path}")
+
+        # Change owner to 'deck' user (UID 1000)
+        try:
+            import pwd
+            uid = pwd.getpwnam("deck").pw_uid
+            gid = pwd.getpwnam("deck").pw_gid
+            os.chown(local_path, uid, gid)
+        except Exception:
+            try:
+                os.chown(local_path, 1000, 1000)
+            except Exception:
+                pass
 
         self._ensure_symlink(local_path, system_path)
 
