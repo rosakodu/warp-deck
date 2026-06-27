@@ -11,7 +11,7 @@ A Decky Loader plugin for Steam Deck that allows you to easily connect to Cloudf
 - **One-click Cloudflare WARP**: Generate and update a fully working WARP VPN config directly from the UI without manual setup.
 - **DPI Bypass (AmneziaWG)**: Built-in support for AmneziaWG protocol headers and junk packets to bypass ISP blocks.
 - **Custom Config Import**: Import and manage your own `.conf` files (AmneziaWG or WireGuard).
-- **Diagnostics Check**: Built-in connectivity test verifying connection to 1.1.1.1, Google, RuTracker, and `plugins.deckbrew.xyz` (Decky Store).
+- **Diagnostics Check**: Built-in connectivity test verifying connection to 1.1.1.1, Google, and RuTracker.
 - **Multiple Profiles**: Store and switch between different configuration profiles.
 - **No Dependencies Needed**: All necessary AmneziaWG binaries are pre-packaged within the plugin.
 
