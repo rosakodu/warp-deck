@@ -1,6 +1,6 @@
 # WARP Deck
 
-[English](README.md)
+[English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [العربية](README.ar.md) | [فارسی](README.fa.md) | [Türkçe](README.tr.md)
 
 Плагин для Decky Loader на Steam Deck, который позволяет в один клик сгенерировать и подключиться к Cloudflare WARP через AmneziaWG (протокол с защитой от блокировок DPI), а также импортировать собственные конфигурации AmneziaWG/WireGuard.
 
