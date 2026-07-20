@@ -1,6 +1,6 @@
 # WARP Deck
 
-[English](README.md) | [Русский](README.ru.md) | [Українська](README.uk.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [العربية](README.ar.md) | [فارسی](README.fa.md) | [Türkçe](README.tr.md)
+[🇬🇧 English](README.md) | [🇷🇺 Русский](README.ru.md) | [🇺🇦  Українська](README.uk.md) | [🇨🇳 简体中文](README.zh-CN.md) | [🇹🇼 繁體中文](README.zh-TW.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇷 فارسی](README.fa.md) | [🇹🇷 Türkçe](README.tr.md)
 
 إضافة Decky Loader لجهاز Steam Deck تتيح لك الاتصال بسهولة بشبكة Cloudflare WARP عبر AmneziaWG (بروتوكول WireGuard المقاوم لحجب مزود الخدمة) بنقرة واحدة، أو استيراد إعدادات AmneziaWG/WireGuard المخصصة.
 

@@ -1,6 +1,6 @@
 # WARP Deck
 
-[English](README.md) | [Русский](README.ru.md) | [Українська](README.uk.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [العربية](README.ar.md) | [فارسی](README.fa.md) | [Türkçe](README.tr.md)
+[🇬🇧 English](README.md) | [🇷🇺 Русский](README.ru.md) | [🇺🇦  Українська](README.uk.md) | [🇨🇳 简体中文](README.zh-CN.md) | [🇹🇼 繁體中文](README.zh-TW.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇷 فارسی](README.fa.md) | [🇹🇷 Türkçe](README.tr.md)
 
 一款適用於 Steam Deck 的 Decky Loader 外掛程式，可讓您一鍵輕鬆連線至基於 AmneziaWG（抗 DPI 封鎖的 WireGuard 協定）的 Cloudflare WARP，或匯入自訂的 AmneziaWG/WireGuard 設定檔。
 
