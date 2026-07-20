@@ -1,6 +1,6 @@
 # WARP Deck
 
-[English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [العربية](README.ar.md) | [فارسی](README.fa.md) | [Türkçe](README.tr.md)
+[English](README.md) | [Русский](README.ru.md) | [Українська](README.uk.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [العربية](README.ar.md) | [فارسی](README.fa.md) | [Türkçe](README.tr.md)
 
 یک افزونه Decky Loader برای Steam Deck که به شما امکان می‌دهد تنها با یک کلیک و از طریق AmneziaWG (پروتکل وایه‌گارد مقاوم در برابر DPI) به Cloudflare WARP متصل شوید، یا کانفیگ‌های شخصی AmneziaWG/WireGuard خود را وارد کنید.
 
