@@ -6,7 +6,7 @@
 
 > **注意：** 此插件要求您的系统上安装官方 [Amnezia VPN 客户端](https://github.com/amnezia-vpn/amnezia-client) 才能正常工作。
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 功能特点
 

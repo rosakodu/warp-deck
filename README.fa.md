@@ -6,7 +6,7 @@
 
 > **توجه:** برای عملکرد صحیح این افزونه، نصب کلاینت رسمی [Amnezia VPN](https://github.com/amnezia-vpn/amnezia-client) بر روی سیستم شما الزامی است.
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 ویژگی‌ها
 

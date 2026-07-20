@@ -6,7 +6,7 @@ A Decky Loader plugin for Steam Deck that allows you to easily connect to Cloudf
 
 > **Note:** This plugin requires the official [Amnezia VPN Client](https://github.com/amnezia-vpn/amnezia-client) to be installed on your system to function properly.
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 Features
 

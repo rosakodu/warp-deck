@@ -6,7 +6,7 @@
 
 > **Примечание:** Для корректной работы плагина на вашем устройстве должен быть обязательно установлен официальный клиент [Amnezia VPN](https://github.com/amnezia-vpn/amnezia-client).
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 Возможности
 

@@ -6,7 +6,7 @@ Steam Deck için bir Decky Loader eklentisi. AmneziaWG (DPI engellemelerine kar�
 
 > **Not:** Bu eklentinin düzgün çalışması için resmi [Amnezia VPN İstemcisinin](https://github.com/amnezia-vpn/amnezia-client) sisteminizde kurulu olması gerekir.
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 Özellikler
 

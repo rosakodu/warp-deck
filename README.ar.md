@@ -6,7 +6,7 @@
 
 > **ملاحظة:** تتطلب هذه الإضافة تثبيت [تطبيق Amnezia VPN](https://github.com/amnezia-vpn/amnezia-client) الرسمي على نظامك لتعمل بشكل صحيح.
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 المميزات
 

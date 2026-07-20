@@ -6,7 +6,7 @@
 
 > **注意：** 此外掛程式需要您的系統上安裝官方 [Amnezia VPN 客戶端](https://github.com/amnezia-vpn/amnezia-client) 才能正常運作。
 
-![Screenshot](assets/screenshot.jpeg)
+![Screenshot](assets/screenshot.png)
 
 ## 📋 功能特色
 
