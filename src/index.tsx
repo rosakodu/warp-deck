@@ -137,7 +137,7 @@ type TranslationKeys =
   | "configNameErrorEmpty"
   | "configNameErrorLength"
   | "configNameErrorRegex"
-  | "support";
+  | "supportBtn";
 
 const translations: Record<string, Record<TranslationKeys, string>> = {
   english: {
@@ -184,7 +184,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "Enter config name",
     configNameErrorLength: "Max {max} characters",
     configNameErrorRegex: "Only letters, numbers, and symbols _ = + . -",
-    support: "Support",
+    supportBtn: "Support",
   },
   russian: {
     vpnConfigs: "VPN Конфиги",
@@ -230,7 +230,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "Введите имя конфига",
     configNameErrorLength: "Макс. {max} символов (как в имени интерфейса)",
     configNameErrorRegex: "Только буквы, цифры и символы _ = + . -",
-    support: "Поддержка",
+    supportBtn: "Поддержка",
   },
   schinese: {
     vpnConfigs: "VPN 配置",
@@ -276,7 +276,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "请输入配置名称",
     configNameErrorLength: "最多 {max} 个字符",
     configNameErrorRegex: "仅限字母、数字以及 _ = + . -",
-    support: "支持",
+    supportBtn: "支持",
   },
   tchinese: {
     vpnConfigs: "VPN 配置",
@@ -322,7 +322,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "請輸入配置名稱",
     configNameErrorLength: "最多 {max} 個字元",
     configNameErrorRegex: "僅限字母、數字以及 _ = + . -",
-    support: "支援",
+    supportBtn: "支援",
   },
   arabic: {
     vpnConfigs: "إعدادات الـ VPN",
@@ -368,7 +368,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "أدخل اسم ملف التهيئة",
     configNameErrorLength: "الحد الأقصى {max} حرفًا",
     configNameErrorRegex: "الأحرف والأرقام والرموز فقط _ = + . -",
-    support: "الدعم",
+    supportBtn: "الدعم",
   },
   persian: {
     vpnConfigs: "پیکربندی‌های VPN",
@@ -414,7 +414,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "نام پیکربندی را وارد کنید",
     configNameErrorLength: "حداکثر {max} نویسه",
     configNameErrorRegex: "فقط حروف، اعداد و نمادهای _ = + . -",
-    support: "پشتیبانی",
+    supportBtn: "پشتیبانی",
   },
   turkish: {
     vpnConfigs: "VPN Yapılandırmaları",
@@ -460,7 +460,7 @@ const translations: Record<string, Record<TranslationKeys, string>> = {
     configNameErrorEmpty: "Yapılandırma adını girin",
     configNameErrorLength: "En fazla {max} karakter",
     configNameErrorRegex: "Sadece harf, rakam ve _ = + . - karakterleri",
-    support: "Destek",
+    supportBtn: "Destek",
   }
 };
 
@@ -1041,30 +1041,21 @@ function Content() {
         )}
       </PanelSection>
 
-      <PanelSection title={t("support")}>
-        <PanelSectionRow>
-          <ButtonItem
-            layout="below"
-            onClick={() => {
-              const url = "https://vk.ru/valvesteamdeck";
-              try {
-                if (Navigation?.NavigateToExternalWeb) {
-                  Navigation.NavigateToExternalWeb(url);
-                } else if (Navigation?.NavigateToSteamWeb) {
-                  Navigation.NavigateToSteamWeb(url);
-                } else {
-                  window.open(url, "_blank");
-                }
-              } catch (e) {
-                console.error("Failed to open support URL:", e);
-                window.open(url, "_blank");
-              }
-            }}
-          >
-            {t("support")}
-          </ButtonItem>
-        </PanelSectionRow>
-      </PanelSection>
+      {/* Кнопка Поддержка */}
+      <PanelSectionRow>
+        <ButtonItem
+          layout="below"
+          onClick={() => {
+            if (Navigation?.NavigateToExternalWeb) {
+              Navigation.NavigateToExternalWeb("https://vk.ru/valvesteamdeck");
+            } else {
+              window.open("https://vk.ru/valvesteamdeck", "_blank");
+            }
+          }}
+        >
+          {t("supportBtn")}
+        </ButtonItem>
+      </PanelSectionRow>
     </>
   );
 }
